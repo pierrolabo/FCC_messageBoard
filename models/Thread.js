@@ -106,5 +106,21 @@ class Thread extends MongoThread {
       });
     return dbOps;
   }
+
+  static async addThreadReply(_id, reply) {
+    let query = { _id: _id };
+    let update = { $push: { replies: reply }, bumped_on: new Date() };
+    let options = { new: true, upsert: true };
+    let dbOps = await super
+      .findOneAndUpdate(query, update, options)
+      .then((thread) => {
+        console.log('savec repl => ', thread);
+        return thread;
+      })
+      .catch((error) => {
+        console.log('addThreadReply() ', error);
+      });
+    return dbOps;
+  }
 }
 module.exports = Thread;

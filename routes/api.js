@@ -10,7 +10,7 @@
 
 var expect = require('chai').expect;
 var Thread = require('../models/Thread');
-
+var Reply = require('../models/Reply');
 module.exports = function (app) {
   app
     .route('/api/threads/:board')
@@ -46,11 +46,22 @@ module.exports = function (app) {
       }
     });
 
-  app.route('/api/replies/:board').get(async (req, res) => {
-    let board = req.params.board;
-    let query = req.query.thread_id;
-    let doc = await Thread.getThreadById(query);
-    console.log('API => GET:BOARD => ', doc);
-    res.json(doc);
-  });
+  app
+    .route('/api/replies/:board')
+    .get(async (req, res) => {
+      let board = req.params.board;
+      let query = req.query.thread_id;
+      let doc = await Thread.getThreadById(query);
+      console.log('API => GET:BOARD => ', doc);
+      res.json(doc);
+    })
+    .post(async (req, res) => {
+      let thread_id = req.body.thread_id;
+      let text = req.body.text;
+      let delete_password = req.body.delete_password;
+      let newReply = new Reply(null, text, delete_password);
+      let docReply = await newReply.createReply();
+      let doc = await Thread.addThreadReply(thread_id, docReply);
+      console.log('thread add reply, ', doc);
+    });
 };
