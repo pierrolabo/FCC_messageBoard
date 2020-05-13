@@ -71,10 +71,12 @@ class Thread extends MongoThread {
           .slice(0, 10)
           .map((thread) => {
             //Can't delete property on thread object, why ?
+            let recentReplies = thread.replies.slice().reverse().slice(0, 3);
             let newThread = {
               _id: thread.id,
               //return the 3 most recent replies
-              replies: thread.replies.slice().reverse().slice(0, 3),
+              replies: recentReplies,
+              replycount: recentReplies.length,
               created_on: thread.created_on,
               bumped_on: thread.bumped_on,
               board: thread.board,
