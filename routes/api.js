@@ -46,5 +46,11 @@ module.exports = function (app) {
       }
     });
 
-  app.route('/api/replies/:board');
+  app.route('/api/replies/:board').get(async (req, res) => {
+    let board = req.params.board;
+    let query = req.query.thread_id;
+    let doc = await Thread.getThreadById(query);
+    console.log('API => GET:BOARD => ', doc);
+    res.json(doc);
+  });
 };

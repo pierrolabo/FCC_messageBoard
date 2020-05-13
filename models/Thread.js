@@ -91,5 +91,20 @@ class Thread extends MongoThread {
       });
     return dbOps;
   }
+
+  //Get Thread by ID
+  static async getThreadById(id) {
+    let dbOps = await super
+      .find({ _id: id })
+      .then((thread) => {
+        console.log('GOT THREAD: ', thread);
+        let newThread = {};
+        return thread;
+      })
+      .catch((err) => {
+        console.log('getThreadById() => ERROR => ', err);
+      });
+    return dbOps;
+  }
 }
 module.exports = Thread;
