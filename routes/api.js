@@ -15,12 +15,8 @@ module.exports = function (app) {
   app
     .route('/api/threads/:board')
     .get(async (req, res) => {
-      console.log('GET REQ QUERY => ', req.query);
-      console.log('GET PARAMS => ', req.params);
-      console.log('GET body => ', req.body);
       let board = req.params.board;
       let doc = await Thread.getMostRecentThread(board);
-      console.log('API => get => ', doc);
       res.json(doc);
     })
     .post(async (req, res) => {
@@ -52,16 +48,18 @@ module.exports = function (app) {
       let board = req.params.board;
       let query = req.query.thread_id;
       let doc = await Thread.getThreadById(query);
-      console.log('API => GET:BOARD => ', doc);
+      console.log('api got thread => ', doc);
       res.json(doc);
     })
     .post(async (req, res) => {
+      console.log(req.params);
+      let board = req.params.board;
       let thread_id = req.body.thread_id;
       let text = req.body.text;
       let delete_password = req.body.delete_password;
       let newReply = new Reply(null, text, delete_password);
       let docReply = await newReply.createReply();
       let doc = await Thread.addThreadReply(thread_id, docReply);
-      console.log('thread add reply, ', doc);
+      res.status(200).redirect(`/b/${board}/${thread_id}`);
     });
 };

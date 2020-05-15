@@ -10,12 +10,12 @@ var chaiHttp = require('chai-http');
 var chai = require('chai');
 var assert = chai.assert;
 var server = require('../server');
-
+let testId = '';
 chai.use(chaiHttp);
 
 suite('Functional Tests', function () {
   suite('API ROUTING FOR /api/threads/:board', function () {
-    test('POST', function (done) {
+    test('POST a thread', function (done) {
       chai
         .request(server)
         .post('/api/threads/test')
@@ -38,6 +38,8 @@ suite('Functional Tests', function () {
         .end(function (err, res) {
           if (err) console.log(err);
           assert.equal(res.status, 200);
+          //test is array ...
+          testId = res.body[0]._id;
           done();
         });
     });
@@ -58,9 +60,65 @@ suite('Functional Tests', function () {
   });
 
   suite('API ROUTING FOR /api/replies/:board', function () {
-    suite('POST', function () {});
-
     suite('GET', function () {});
+    suite('POST', function () {
+      test('POST a first reply ', function (done) {
+        chai
+          .request(server)
+          .post('/api/replies/general')
+          .send({
+            thread_id: testId,
+            text: 'A first reply from chaijs',
+            delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            done();
+          });
+      });
+      test('POST a second reply ', function (done) {
+        chai
+          .request(server)
+          .post('/api/replies/general')
+          .send({
+            thread_id: testId,
+            text: 'A second reply from chaijs',
+            delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            done();
+          });
+      });
+      test('POST a third reply ', function (done) {
+        chai
+          .request(server)
+          .post('/api/replies/general')
+          .send({
+            thread_id: testId,
+            text: 'A third reply from chaijs',
+            delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            done();
+          });
+      });
+      test('POST a fourth reply ', function (done) {
+        chai
+          .request(server)
+          .post('/api/replies/general')
+          .send({
+            thread_id: testId,
+            text: 'A fourth reply from chaijs',
+            delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            done();
+          });
+      });
+    });
 
     suite('PUT', function () {});
 
