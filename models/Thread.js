@@ -60,7 +60,6 @@ class Thread extends MongoThread {
   //with only the most recent 3 replies from /api/threads/{board}.
   //The reported and delete_passwords fields will not be sent.
   static async getMostRecentThread(board) {
-    console.log('pass');
     let dbOps = await super
       .find({ board: board })
       .then((threads) => {
@@ -88,6 +87,50 @@ class Thread extends MongoThread {
       })
       .catch((err) => {
         console.log('getMostRecentThread() => ERROR => ', err);
+      });
+    return dbOps;
+  }
+
+  //Get Thread by ID
+  static async getThreadById(id) {
+    let dbOps = await super
+      .find({ _id: id })
+      .then((thread) => {
+        let filteredReplies = thread[0].replies.slice().map((reply) => {
+          let newReply = {
+            _id: reply.id,
+            created_on: reply.created_on,
+            text: reply.text,
+          };
+          return newReply;
+        });
+        let newThread = {
+          _id: thread[0]._id,
+          created_on: thread[0].created_on,
+          bumped_on: thread[0].bumped_on,
+          board: thread[0].board,
+          text: thread[0].text,
+          replies: filteredReplies,
+        };
+        return newThread;
+      })
+      .catch((err) => {
+        console.log('getThreadById() => ERROR => ', err);
+      });
+    return dbOps;
+  }
+
+  static async addThreadReply(_id, reply) {
+    let query = { _id: _id };
+    let update = { $push: { replies: reply }, bumped_on: new Date() };
+    let options = { new: true, upsert: true, useFindAndModify: false };
+    let dbOps = await super
+      .findOneAndUpdate(query, update, options)
+      .then((thread) => {
+        return thread;
+      })
+      .catch((error) => {
+        console.log('addThreadReply() ', error);
       });
     return dbOps;
   }
