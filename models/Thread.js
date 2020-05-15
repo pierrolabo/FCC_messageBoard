@@ -104,7 +104,6 @@ class Thread extends MongoThread {
           };
           return newReply;
         });
-        console.log('THREAD => ', thread[0]);
         let newThread = {
           _id: thread[0]._id,
           created_on: thread[0].created_on,
