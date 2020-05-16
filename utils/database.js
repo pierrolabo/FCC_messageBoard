@@ -3,7 +3,7 @@ let _db;
 
 const mongoConnect = (callback) => {
   mongoose
-    .connect(process.env.DATABASE_LOCALE, {
+    .connect(process.env.DATABASE, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })

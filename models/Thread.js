@@ -96,6 +96,7 @@ class Thread extends MongoThread {
     let dbOps = await super
       .find({ _id: id })
       .then((thread) => {
+        console.log('get by id: ', thread);
         let filteredReplies = thread[0].replies.slice().map((reply) => {
           let newReply = {
             _id: reply.id,

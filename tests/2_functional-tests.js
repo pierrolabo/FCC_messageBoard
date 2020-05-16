@@ -60,7 +60,6 @@ suite('Functional Tests', function () {
   });
 
   suite('API ROUTING FOR /api/replies/:board', function () {
-    suite('GET', function () {});
     suite('POST', function () {
       test('POST a first reply ', function (done) {
         chai
@@ -119,7 +118,24 @@ suite('Functional Tests', function () {
           });
       });
     });
-
+    suite('GET', function () {
+      test('GET POST by ID', function (done) {
+        chai
+          .request(server)
+          .get(`/api/replies/${testId}`)
+          .end(function (err, res) {
+            if (err) console.log(err);
+            assert.equal(res.body._id, testId);
+            assert.equal(res.body.replies[0].text, 'A first reply from chaijs');
+            assert.equal(
+              res.body.replies[1].text,
+              'A second reply from chaijs'
+            );
+            assert.equal(res.body.replies[2].text, 'A third reply from chaijs');
+            done();
+          });
+      });
+    });
     suite('PUT', function () {});
 
     suite('DELETE', function () {});

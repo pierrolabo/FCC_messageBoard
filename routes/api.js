@@ -46,9 +46,14 @@ module.exports = function (app) {
     .route('/api/replies/:board')
     .get(async (req, res) => {
       let board = req.params.board;
-      let query = req.query.thread_id;
-      let doc = await Thread.getThreadById(query);
-      console.log('api got thread => ', doc);
+      let thread_id = req.query.thread_id;
+      let doc = null;
+      //We don't use board to find the thread because of uniqueness of ObjectId
+      if (thread_id) {
+        doc = await Thread.getThreadById(thread_id);
+      } else {
+        doc = await Thread.getThreadById(board);
+      }
       res.json(doc);
     })
     .post(async (req, res) => {
