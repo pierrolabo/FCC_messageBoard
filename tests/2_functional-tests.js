@@ -18,7 +18,7 @@ suite('Functional Tests', function () {
     test('POST a thread', function (done) {
       chai
         .request(server)
-        .post('/api/threads/test')
+        .post('/api/threads/general')
         .send({
           board: 'general',
           text: 'POST a Thread',
