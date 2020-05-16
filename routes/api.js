@@ -20,8 +20,7 @@ module.exports = function (app) {
       res.json(doc);
     })
     .post(async (req, res) => {
-      console.log('POST body => ', req.body);
-      let board = req.body.board;
+      let board = req.params.board;
       let text = req.body.text;
       let delete_password = req.body.delete_password;
       let newThread = new Thread(
@@ -37,8 +36,18 @@ module.exports = function (app) {
       let doc = await newThread.createThread();
       if (doc.httpCode === 200) {
         //success
-        console.log('API => success ', doc.httpCode);
-        res.status(200).redirect(`/b/${doc.data.board}`);
+        console.log('API => post thread success ', doc.httpCode);
+        res.status(200).redirect(`/b/${board}/`);
+      }
+    })
+    .delete(async (req, res) => {
+      let thread_id = req.body.thread_id;
+      let delete_password = req.body.delete_password;
+      let dbOps = await Thread.deleteThread(thread_id, delete_password);
+      if (dbOps === 1) {
+        res.json('success');
+      } else {
+        res.json('incorrect password');
       }
     });
 

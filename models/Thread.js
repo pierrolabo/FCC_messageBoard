@@ -135,5 +135,18 @@ class Thread extends MongoThread {
       });
     return dbOps;
   }
+
+  static async deleteThread(_id, password) {
+    let query = { _id: _id, delete_password: password };
+    let dbOps = await super
+      .deleteOne(query)
+      .then((data) => {
+        return data.deletedCount;
+      })
+      .catch((error) => {
+        console.log('deleteThread => ERROR => ', error);
+      });
+    return dbOps;
+  }
 }
 module.exports = Thread;
