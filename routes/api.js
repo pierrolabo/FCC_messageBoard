@@ -8,7 +8,6 @@
 
 'use strict';
 
-var expect = require('chai').expect;
 var Thread = require('../models/Thread');
 var Reply = require('../models/Reply');
 module.exports = function (app) {
@@ -47,6 +46,15 @@ module.exports = function (app) {
         res.json('success');
       } else {
         res.json('incorrect password');
+      }
+    })
+    .put(async (req, res) => {
+      let report_id = req.body.report_id;
+      let dbOps = await Thread.reportThread(report_id);
+      if (dbOps) {
+        res.json('success');
+      } else {
+        res.json('error');
       }
     });
 
@@ -98,6 +106,21 @@ module.exports = function (app) {
         res.json('success');
       } else {
         console.log('not found');
+      }
+    })
+    .put(async (req, res) => {
+      let report_id = req.body.reply_id;
+      let thread_id = req.body.thread_id;
+      let replies = await Thread.getThreadRepliesById(thread_id);
+      replies.map((reply) => {
+        if (report_id == reply._id) {
+          reply.reported = true;
+        }
+        return reply;
+      });
+      let dbOps = await Thread.reportPost(thread_id, replies);
+      if (dbOps) {
+        res.json('success');
       }
     });
 };

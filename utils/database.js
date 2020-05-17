@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-let _db;
 
 const mongoConnect = (callback) => {
   mongoose
@@ -18,13 +17,4 @@ const mongoConnect = (callback) => {
     });
 };
 
-const getDb = () => {
-  if (_db) {
-    console.log('_getdb => ');
-    return _db;
-  }
-  throw 'No database found';
-};
-
 exports.mongoConnect = mongoConnect;
-exports.getDb = getDb;

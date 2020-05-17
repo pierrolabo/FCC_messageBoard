@@ -174,5 +174,37 @@ class Thread extends MongoThread {
       });
     return dbOps;
   }
+
+  static async reportThread(thread_id) {
+    let query = { _id: thread_id };
+    let update = { $set: { reported: true } };
+    let options = { new: true, upsert: true, useFindAndModify: false };
+
+    let dbOps = await super
+      .findOneAndUpdate(query, update, options)
+      .then((thread) => {
+        return true;
+      })
+      .catch((error) => {
+        console.log('reportThread() ', error);
+        return false;
+      });
+    return dbOps;
+  }
+  static async reportPost(thread_id, replies) {
+    let query = { _id: thread_id };
+    let update = { $set: { replies: replies } };
+    let options = { new: true, upsert: true, useFindAndModify: false };
+    let dbOps = await super
+      .findOneAndUpdate(query, update, options)
+      .then((thread) => {
+        return true;
+      })
+      .catch((error) => {
+        console.log('reportThread() ', error);
+        return false;
+      });
+    return dbOps;
+  }
 }
 module.exports = Thread;

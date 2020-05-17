@@ -15,6 +15,7 @@ var server = require('../server');
 let testId = '';
 let deleteId = '';
 let replyId = '';
+let putId = '';
 chai.use(chaiHttp);
 
 suite('Functional Tests', function () {
@@ -89,7 +90,20 @@ suite('Functional Tests', function () {
           });
       });
     });
-    suite('PUT', function () {});
+    suite('PUT', function () {
+      test('REPORT THREAD', function (done) {
+        chai
+          .request(server)
+          .put('/api/threads/general/')
+          .send({
+            thread_id: testId,
+          })
+          .end(function (err, res) {
+            assert.equal(res.body, 'success');
+            done();
+          });
+      });
+    });
   });
 
   suite('API ROUTING FOR /api/replies/:board', function () {
@@ -167,6 +181,7 @@ suite('Functional Tests', function () {
             assert.equal(res.body.replies[2].text, 'A third reply from chaijs');
             //Update replyId so we can test it
             replyId = res.body.replies[2]._id;
+            putId = res.body.replies[0]._id;
             done();
           });
       });
@@ -183,6 +198,21 @@ suite('Functional Tests', function () {
             thread_id: testId,
             reply_id: replyId,
             delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.body, 'success');
+            done();
+          });
+      });
+    });
+    suite('PUT', function () {
+      test('REPORT THREAD', function (done) {
+        chai
+          .request(server)
+          .put('/api/replies/general/')
+          .send({
+            thread_id: testId,
+            reply_id: replyId,
           })
           .end(function (err, res) {
             assert.equal(res.body, 'success');
