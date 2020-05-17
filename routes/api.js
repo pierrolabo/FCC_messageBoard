@@ -36,7 +36,6 @@ module.exports = function (app) {
       let doc = await newThread.createThread();
       if (doc.httpCode === 200) {
         //success
-        console.log('API => post thread success ', doc.httpCode);
         res.status(200).redirect(`/b/${board}/`);
       }
     })
@@ -81,7 +80,7 @@ module.exports = function (app) {
       let delete_password = req.body.delete_password;
       let found = false;
       let replies = await Thread.getThreadRepliesById(thread_id);
-      let filteredReplies = replies.map((reply) => {
+      replies.map((reply) => {
         if (post_id == reply._id) {
           if (delete_password == reply.delete_password) {
             //do stuff
@@ -95,8 +94,8 @@ module.exports = function (app) {
         return reply;
       });
       if (found) {
-        let dbOps = await Thread.deletePost(thread_id, replies);
-        console.log('deleted => ', dbOps);
+        await Thread.deletePost(thread_id, replies);
+        res.json('success');
       } else {
         console.log('not found');
       }
