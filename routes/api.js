@@ -36,7 +36,6 @@ module.exports = function (app) {
       let doc = await newThread.createThread();
       if (doc.httpCode === 200) {
         //success
-        console.log('API => post thread success ', doc.httpCode);
         res.status(200).redirect(`/b/${board}/`);
       }
     })
@@ -66,7 +65,6 @@ module.exports = function (app) {
       res.json(doc);
     })
     .post(async (req, res) => {
-      console.log(req.params);
       let board = req.params.board;
       let thread_id = req.body.thread_id;
       let text = req.body.text;
@@ -75,5 +73,31 @@ module.exports = function (app) {
       let docReply = await newReply.createReply();
       let doc = await Thread.addThreadReply(thread_id, docReply);
       res.status(200).redirect(`/b/${board}/${thread_id}`);
+    })
+    .delete(async (req, res) => {
+      let post_id = req.body.reply_id;
+      let thread_id = req.body.thread_id;
+      let delete_password = req.body.delete_password;
+      let found = false;
+      let replies = await Thread.getThreadRepliesById(thread_id);
+      replies.map((reply) => {
+        if (post_id == reply._id) {
+          if (delete_password == reply.delete_password) {
+            //do stuff
+            reply.text = '[deleted]';
+            found = true;
+            return reply;
+          } else {
+            res.json('incorrect password');
+          }
+        }
+        return reply;
+      });
+      if (found) {
+        await Thread.deletePost(thread_id, replies);
+        res.json('success');
+      } else {
+        console.log('not found');
+      }
     });
 };

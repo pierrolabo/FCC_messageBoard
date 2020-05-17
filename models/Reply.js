@@ -6,6 +6,10 @@ const ReplySchema = new Schema({
     type: Schema.Types.ObjectId,
     default: new mongoose.Types.ObjectId(),
   },
+  postId: {
+    type: Schema.Types.ObjectId,
+    default: new mongoose.Types.ObjectId(),
+  },
   text: { type: String },
   created_on: { type: Date },
   delete_password: { type: String },
@@ -18,6 +22,7 @@ class Reply extends MongoReply {
   constructor(_id, text, delete_password) {
     super();
     this._id = _id ? _id : new mongoose.Types.ObjectId();
+    this.postId = this._id;
     this.text = text;
     this.created_on = new Date();
     this.delete_password = delete_password;

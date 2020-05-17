@@ -10,7 +10,11 @@ var chaiHttp = require('chai-http');
 var chai = require('chai');
 var assert = chai.assert;
 var server = require('../server');
+//Those var are for testing purpose
+//each has a mongoId
 let testId = '';
+let deleteId = '';
+let replyId = '';
 chai.use(chaiHttp);
 
 suite('Functional Tests', function () {
@@ -18,10 +22,25 @@ suite('Functional Tests', function () {
     test('POST a thread', function (done) {
       chai
         .request(server)
-        .post('/api/threads/test')
+        .post('/api/threads/general')
         .send({
           board: 'general',
           text: 'POST a Thread',
+          delete_password: 'azerty',
+        })
+        .end(function (err, res) {
+          if (err) console.log(err);
+          assert.equal(res.status, 200);
+          done();
+        });
+    });
+    test('POST a thread to delete', function (done) {
+      chai
+        .request(server)
+        .post('/api/threads/general')
+        .send({
+          board: 'general',
+          text: 'POST to DELETE',
           delete_password: 'azerty',
         })
         .end(function (err, res) {
@@ -39,7 +58,8 @@ suite('Functional Tests', function () {
           if (err) console.log(err);
           assert.equal(res.status, 200);
           //test is array ...
-          testId = res.body[0]._id;
+          deleteId = res.body[0]._id;
+          testId = res.body[1]._id;
           done();
         });
     });
@@ -53,9 +73,22 @@ suite('Functional Tests', function () {
           done();
         });
     });
-
-    suite('DELETE', function () {});
-
+    suite('DELETE', function () {
+      test('DELETE THREAD', function (done) {
+        chai
+          .request(server)
+          .delete('/api/threads/general/')
+          .send({
+            board: 'general',
+            thread_id: deleteId,
+            delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.body, 'success');
+            done();
+          });
+      });
+    });
     suite('PUT', function () {});
   });
 
@@ -132,12 +165,30 @@ suite('Functional Tests', function () {
               'A second reply from chaijs'
             );
             assert.equal(res.body.replies[2].text, 'A third reply from chaijs');
+            //Update replyId so we can test it
+            replyId = res.body.replies[2]._id;
             done();
           });
       });
     });
     suite('PUT', function () {});
 
-    suite('DELETE', function () {});
+    suite('DELETE', function () {
+      //write at the end
+      test('DELETE THREAD', function (done) {
+        chai
+          .request(server)
+          .delete('/api/replies/general/')
+          .send({
+            thread_id: testId,
+            reply_id: replyId,
+            delete_password: 'azerty',
+          })
+          .end(function (err, res) {
+            assert.equal(res.body, 'success');
+            done();
+          });
+      });
+    });
   });
 });

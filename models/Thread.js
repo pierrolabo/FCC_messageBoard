@@ -96,10 +96,9 @@ class Thread extends MongoThread {
     let dbOps = await super
       .find({ _id: id })
       .then((thread) => {
-        console.log('get by id: ', thread);
         let filteredReplies = thread[0].replies.slice().map((reply) => {
           let newReply = {
-            _id: reply.id,
+            _id: reply._id,
             created_on: reply.created_on,
             text: reply.text,
           };
@@ -121,6 +120,18 @@ class Thread extends MongoThread {
     return dbOps;
   }
 
+  //Get Thread by ID
+  static async getThreadRepliesById(id) {
+    let dbOps = await super
+      .find({ _id: id })
+      .then((thread) => {
+        return thread[0].replies;
+      })
+      .catch((err) => {
+        console.log('getThreadRepliesById() => ERROR => ', err);
+      });
+    return dbOps;
+  }
   static async addThreadReply(_id, reply) {
     let query = { _id: _id };
     let update = { $push: { replies: reply }, bumped_on: new Date() };
@@ -145,6 +156,21 @@ class Thread extends MongoThread {
       })
       .catch((error) => {
         console.log('deleteThread => ERROR => ', error);
+      });
+    return dbOps;
+  }
+
+  static async deletePost(thread_id, replies) {
+    let query = { _id: thread_id };
+    let update = { $set: { replies: replies } };
+    let options = { new: true, upsert: true, useFindAndModify: false };
+    let dbOps = await super
+      .findOneAndUpdate(query, update, options)
+      .then((thread) => {
+        return thread;
+      })
+      .catch((error) => {
+        console.log('deletePost() ', error);
       });
     return dbOps;
   }
